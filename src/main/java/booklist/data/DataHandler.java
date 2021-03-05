@@ -20,7 +20,7 @@ public class DataHandler {
      * default constructor: defeat instantiation
      */
     private DataHandler() {
-        publisherMap = new HashMap<String, Publisher>();
+        publisherMap = null;
     }
 
     /**
@@ -28,7 +28,7 @@ public class DataHandler {
      */
     public static void readJSON() {
         try {
-            byte[] jsonData = Files.readAllBytes(Paths.get("./data.json"));
+            byte[] jsonData = Files.readAllBytes(Paths.get("./booklist.json")); // FIXME use path from config
             ObjectMapper objectMapper = new ObjectMapper();
             Publisher[] publishers = objectMapper.readValue(jsonData, Publisher[].class);
             for (Publisher publisher : publishers) {
@@ -49,7 +49,7 @@ public class DataHandler {
         FileOutputStream fileOutputStream = null;
 
         try {
-            fileOutputStream = new FileOutputStream("./data.json");
+            fileOutputStream = new FileOutputStream("./booklist.json");  // FIXME use path from config
             writer = new BufferedWriter(new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8));
             objectMapper.writeValue(writer, publisherList);
         } catch (IOException ex) {
@@ -85,8 +85,10 @@ public class DataHandler {
     }
 
     public static Map<String, Publisher> getPublisherMap() {
-        if (publisherMap.isEmpty())
+        if (publisherMap == null) {
+            setPublisherMap(new HashMap<String, Publisher>());
             readJSON();
+        }
         return publisherMap;
     }
 
